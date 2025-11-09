@@ -1,0 +1,2025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Layout Tutorial Editor - Learn UI/UX Interactively</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #2d3748;
+    }
+
+    /* Navigation Bar */
+    .navbar {
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .navbar-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 25px;
+    }
+
+    .navbar-brand {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .navbar-brand::before {
+      content: '🎨';
+      font-size: 28px;
+      -webkit-text-fill-color: initial;
+    }
+
+    .navbar-menu {
+      display: flex;
+      gap: 25px;
+      align-items: center;
+      list-style: none;
+    }
+
+    .navbar-item {
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: all 0.3s;
+      font-weight: 500;
+      color: #4a5568;
+    }
+
+    .navbar-item:hover {
+      background: #f7fafc;
+      color: #667eea;
+    }
+
+    .navbar-item.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .navbar-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: all 0.3s;
+    }
+
+    .nav-btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .nav-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .nav-btn-secondary {
+      background: transparent;
+      border: 2px solid #e2e8f0;
+      color: #4a5568;
+    }
+
+    .nav-btn-secondary:hover {
+      border-color: #667eea;
+      color: #667eea;
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    .hamburger span {
+      width: 25px;
+      height: 3px;
+      background: #667eea;
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 280px 1fr 380px;
+      gap: 20px;
+      min-height: calc(100vh - 80px);
+    }
+
+    .panel {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      padding: 20px;
+      overflow-y: auto;
+      max-height: calc(100vh - 120px);
+    }
+
+    .panel h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #667eea;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 8px;
+    }
+
+    .panel h3 {
+      font-size: 14px;
+      margin: 15px 0 8px;
+      color: #4a5568;
+    }
+
+    /* Tabs for switching between modes */
+    .tabs {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      color: #718096;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+      font-size: 13px;
+    }
+
+    .tab:hover {
+      color: #667eea;
+    }
+
+    .tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Code Editor Styles */
+    .code-editor {
+      background: #1e1e1e;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .editor-header {
+      background: #2d2d2d;
+      padding: 10px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #404040;
+    }
+
+    .editor-title {
+      color: #e2e8f0;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .editor-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .editor-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #e2e8f0;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: all 0.2s;
+    }
+
+    .editor-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .code-textarea {
+      width: 100%;
+      min-height: 200px;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      border: none;
+      padding: 15px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      resize: vertical;
+      outline: none;
+    }
+
+    .code-textarea:focus {
+      background: #252526;
+    }
+
+    /* Template Panel */
+    #template-panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .template-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .template-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .template-btn.active {
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    }
+
+    /* Controls Panel - scrollable */
+    #controls-panel {
+      max-height: calc(100vh - 40px);
+    }
+
+    .control-group {
+      margin-bottom: 20px;
+      padding: 12px;
+      background: #f7fafc;
+      border-radius: 8px;
+      border-left: 3px solid #667eea;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #2d3748;
+    }
+
+    .control-group input[type="range"],
+    .control-group input[type="number"] {
+      width: 100%;
+      margin-bottom: 5px;
+    }
+
+    .control-group select,
+    .control-group input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #cbd5e0;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .control-group input[type="range"] {
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 3px;
+      outline: none;
+    }
+
+    .value-display {
+      display: inline-block;
+      background: #667eea;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-left: 8px;
+    }
+
+    /* Preview Panel */
+    #preview-panel {
+      position: relative;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .preview-header {
+      background: #667eea;
+      color: white;
+      padding: 15px 20px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .preview-mode-btns {
+      display: flex;
+      gap: 5px;
+    }
+
+    .mode-btn {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: all 0.2s;
+    }
+
+    .mode-btn:hover,
+    .mode-btn.active {
+      background: rgba(255,255,255,0.3);
+    }
+
+    #preview-container {
+      height: calc(100% - 50px);
+      background: #f7fafc;
+      padding: 20px;
+      overflow: auto;
+      transition: all 0.3s;
+    }
+
+    #preview-container.mobile {
+      max-width: 375px;
+      margin: 0 auto;
+    }
+
+    #preview-container.tablet {
+      max-width: 768px;
+      margin: 0 auto;
+    }
+
+    /* Demo boxes for preview */
+    .demo-box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      min-height: 80px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    /* Explanation Panel */
+    #explanation-panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .explanation-content {
+      background: #edf2f7;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      border-left: 4px solid #667eea;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .explanation-content h4 {
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #667eea;
+    }
+
+    .explanation-content code {
+      background: #2d3748;
+      color: #68d391;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .tutorial-step {
+      background: #fffaf0;
+      border: 2px solid #ed8936;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+
+    .tutorial-step.completed {
+      background: #f0fff4;
+      border-color: #48bb78;
+    }
+
+    .step-number {
+      display: inline-block;
+      background: #ed8936;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 24px;
+      font-weight: 700;
+      font-size: 12px;
+      margin-right: 8px;
+    }
+
+    .tutorial-step.completed .step-number {
+      background: #48bb78;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5a67d8;
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #2d3748;
+    }
+
+    .btn-secondary:hover {
+      background: #cbd5e0;
+    }
+
+    .code-preview {
+      background: #2d3748;
+      color: #68d391;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      overflow-x: auto;
+      margin-top: 15px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .code-preview .keyword { color: #f687b3; }
+    .code-preview .property { color: #90cdf4; }
+    .code-preview .value { color: #fbb6ce; }
+
+    @media (max-width: 1400px) {
+      .container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+      
+      .panel {
+        max-height: none;
+      }
+
+      .navbar-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        flex-direction: column;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .navbar-menu.mobile-open {
+        display: flex;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .navbar-container {
+        padding: 12px 15px;
+      }
+
+      .navbar-brand {
+        font-size: 18px;
+      }
+
+      .navbar-actions {
+        display: none;
+      }
+    }
+
+    /* Animations */
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-brand">Layout Tutorial Editor</div>
+      
+      <ul class="navbar-menu" id="navbar-menu">
+        <li class="navbar-item active" data-view="templates">Templates</li>
+        <li class="navbar-item" data-view="editor">Code Editor</li>
+        <li class="navbar-item" data-view="examples">Examples</li>
+        <li class="navbar-item" data-view="docs">Docs</li>
+      </ul>
+
+      <div class="navbar-actions">
+        <button class="nav-btn nav-btn-secondary" id="export-btn">📥 Export</button>
+        <button class="nav-btn nav-btn-primary" id="save-btn">💾 Save</button>
+      </div>
+
+      <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Left Panel: Templates -->
+    <div class="panel" id="template-panel">
+      <div class="tabs">
+        <button class="tab active" data-tab="templates">📐 Templates</button>
+        <button class="tab" data-tab="tutorial">📚 Tutorial</button>
+      </div>
+
+      <div class="tab-content active" data-content="templates">
+        <p style="font-size: 13px; margin-bottom: 15px; color: #718096;">Choose a template to start learning:</p>
+        
+        <button class="template-btn active" data-template="flexbox-basics">
+          Flexbox Basics
+        </button>
+        <button class="template-btn" data-template="flexbox-nav">
+          Flexbox Navigation
+        </button>
+        <button class="template-btn" data-template="grid-basics">
+          CSS Grid Basics
+        </button>
+        <button class="template-btn" data-template="grid-layout">
+          Grid Page Layout
+        </button>
+        <button class="template-btn" data-template="responsive-columns">
+          Responsive Columns
+        </button>
+        <button class="template-btn" data-template="card-grid">
+          Card Grid System
+        </button>
+        
+        <h3 style="margin: 20px 0 10px; color: #667eea; font-size: 15px;">🎨 Complete Page Layouts</h3>
+        
+        <button class="template-btn" data-template="blog-layout">
+          📝 Blog Layout
+        </button>
+        <button class="template-btn" data-template="dashboard-layout">
+          📊 Dashboard Layout
+        </button>
+        <button class="template-btn" data-template="landing-page">
+          🚀 Landing Page
+        </button>
+        <button class="template-btn" data-template="portfolio-layout">
+          💼 Portfolio Layout
+        </button>
+        <button class="template-btn" data-template="ecommerce-layout">
+          🛒 E-commerce Layout
+        </button>
+      </div>
+
+      <div class="tab-content" data-content="tutorial">
+        <h3 style="margin-top: 0;">🎯 Current Tutorial</h3>
+        <div id="tutorial-steps"></div>
+        
+        <div class="btn-group">
+          <button class="btn btn-secondary" id="reset-btn">Reset</button>
+          <button class="btn btn-primary" id="next-step-btn">Next Step</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Middle Panel: Preview -->
+    <div class="panel" id="preview-panel">
+      <div class="tabs">
+        <button class="tab active" data-tab="preview">👁️ Preview</button>
+        <button class="tab" data-tab="html-editor">HTML</button>
+        <button class="tab" data-tab="css-editor">CSS</button>
+      </div>
+
+      <!-- Preview Tab -->
+      <div class="tab-content active" data-content="preview">
+        <div class="preview-header">
+          <span>Live Preview</span>
+          <div class="preview-mode-btns">
+            <button class="mode-btn active" data-mode="desktop">🖥️ Desktop</button>
+            <button class="mode-btn" data-mode="tablet">📱 Tablet</button>
+            <button class="mode-btn" data-mode="mobile">📱 Mobile</button>
+          </div>
+        </div>
+        <div id="preview-container"></div>
+      </div>
+
+      <!-- HTML Editor Tab -->
+      <div class="tab-content" data-content="html-editor">
+        <div class="code-editor">
+          <div class="editor-header">
+            <span class="editor-title">HTML Structure</span>
+            <div class="editor-actions">
+              <button class="editor-btn" id="format-html">Format</button>
+              <button class="editor-btn" id="copy-html">Copy</button>
+            </div>
+          </div>
+          <textarea class="code-textarea" id="html-editor" spellcheck="false"></textarea>
+        </div>
+        <button class="btn btn-primary" id="apply-html" style="width: 100%;">Apply HTML Changes</button>
+      </div>
+
+      <!-- CSS Editor Tab -->
+      <div class="tab-content" data-content="css-editor">
+        <div class="code-editor">
+          <div class="editor-header">
+            <span class="editor-title">CSS Styles</span>
+            <div class="editor-actions">
+              <button class="editor-btn" id="format-css">Format</button>
+              <button class="editor-btn" id="copy-css">Copy</button>
+            </div>
+          </div>
+          <textarea class="code-textarea" id="css-editor" spellcheck="false"></textarea>
+        </div>
+        <button class="btn btn-primary" id="apply-css" style="width: 100%;">Apply CSS Changes</button>
+      </div>
+    </div>
+
+    <!-- Right Panel: Controls & Explanations -->
+    <div class="panel" id="controls-panel">
+      <h2>⚙️ Layout Controls</h2>
+      <div id="controls-container"></div>
+      
+      <h2 style="margin-top: 25px;">💡 Explanation</h2>
+      <div id="explanation-container"></div>
+      
+      <h2 style="margin-top: 25px;">📝 Generated CSS</h2>
+      <div class="code-preview" id="code-preview"></div>
+    </div>
+  </div>
+
+  <script>
+    // Template definitions with learning steps
+    const templates = {
+      'flexbox-basics': {
+        name: 'Flexbox Basics',
+        description: 'Learn the fundamentals of Flexbox layout',
+        defaultHTML: `
+          <div class="demo-box">Box 1</div>
+          <div class="demo-box">Box 2</div>
+          <div class="demo-box">Box 3</div>
+        `,
+        defaultCSS: {
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+          alignItems: 'stretch',
+          gap: '10',
+          flexWrap: 'nowrap',
+          padding: '20'
+        },
+        controls: [
+          { name: 'flexDirection', label: 'Flex Direction', type: 'select', options: ['row', 'row-reverse', 'column', 'column-reverse'], target: 'container' },
+          { name: 'justifyContent', label: 'Justify Content (main axis)', type: 'select', options: ['flex-start', 'flex-end', 'center', 'space-between', 'space-around', 'space-evenly'], target: 'container' },
+          { name: 'alignItems', label: 'Align Items (cross axis)', type: 'select', options: ['stretch', 'flex-start', 'flex-end', 'center', 'baseline'], target: 'container' },
+          { name: 'gap', label: 'Gap', type: 'range', min: 0, max: 50, unit: 'px', target: 'container' },
+          { name: 'flexWrap', label: 'Flex Wrap', type: 'select', options: ['nowrap', 'wrap', 'wrap-reverse'], target: 'container' },
+          { name: 'padding', label: 'Container Padding', type: 'range', min: 0, max: 50, unit: 'px', target: 'container' }
+        ],
+        steps: [
+          { instruction: 'Change flex-direction to "column" to stack items vertically', property: 'flexDirection', value: 'column' },
+          { instruction: 'Center items horizontally using justify-content', property: 'justifyContent', value: 'center' },
+          { instruction: 'Add spacing between items (gap: 20px)', property: 'gap', value: '20' },
+          { instruction: 'Try "space-between" to see equal spacing', property: 'justifyContent', value: 'space-between' }
+        ],
+        explanations: {
+          flexDirection: 'Sets the main axis direction. "row" = horizontal, "column" = vertical.',
+          justifyContent: 'Aligns items along the main axis (horizontal if row, vertical if column).',
+          alignItems: 'Aligns items along the cross axis (perpendicular to main axis).',
+          gap: 'Creates spacing between flex items without using margins.',
+          flexWrap: 'Controls whether items wrap to new lines when they don\'t fit.',
+          padding: 'Inner spacing of the container.'
+        }
+      },
+      
+      'flexbox-nav': {
+        name: 'Flexbox Navigation',
+        description: 'Build a responsive navigation bar',
+        defaultHTML: `
+          <div class="demo-box" style="flex: 0 0 auto; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">Logo</div>
+          <div class="demo-box" style="flex: 1; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">Nav Items</div>
+          <div class="demo-box" style="flex: 0 0 auto; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">Button</div>
+        `,
+        defaultCSS: {
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: '15',
+          padding: '15',
+          flexWrap: 'nowrap'
+        },
+        controls: [
+          { name: 'flexDirection', label: 'Direction', type: 'select', options: ['row', 'column'], target: 'container' },
+          { name: 'justifyContent', label: 'Justify', type: 'select', options: ['flex-start', 'space-between', 'space-around', 'center'], target: 'container' },
+          { name: 'alignItems', label: 'Align', type: 'select', options: ['center', 'flex-start', 'flex-end', 'stretch'], target: 'container' },
+          { name: 'gap', label: 'Gap', type: 'range', min: 0, max: 40, unit: 'px', target: 'container' },
+          { name: 'padding', label: 'Padding', type: 'range', min: 0, max: 40, unit: 'px', target: 'container' }
+        ],
+        steps: [
+          { instruction: 'Ensure items are centered vertically (alignItems: center)', property: 'alignItems', value: 'center' },
+          { instruction: 'Use space-between to push items apart', property: 'justifyContent', value: 'space-between' },
+          { instruction: 'Add padding for breathing room', property: 'padding', value: '20' },
+          { instruction: 'Try column direction for mobile menu', property: 'flexDirection', value: 'column' }
+        ],
+        explanations: {
+          flexDirection: 'Row keeps nav horizontal, column stacks for mobile.',
+          justifyContent: 'Space-between is perfect for nav bars - pushes logo left, button right.',
+          alignItems: 'Center vertically aligns all navigation items.',
+          gap: 'Spacing between navigation elements.',
+          padding: 'Padding around the entire navigation bar.'
+        }
+      },
+      
+      'grid-basics': {
+        name: 'CSS Grid Basics',
+        description: 'Learn CSS Grid fundamentals',
+        defaultHTML: `
+          <div class="demo-box">1</div>
+          <div class="demo-box">2</div>
+          <div class="demo-box">3</div>
+          <div class="demo-box">4</div>
+          <div class="demo-box">5</div>
+          <div class="demo-box">6</div>
+        `,
+        defaultCSS: {
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr 1fr',
+          gridTemplateRows: 'auto',
+          gap: '10',
+          padding: '20'
+        },
+        controls: [
+          { name: 'gridTemplateColumns', label: 'Columns', type: 'select', options: ['1fr', '1fr 1fr', '1fr 1fr 1fr', '1fr 2fr', 'repeat(3, 1fr)', 'repeat(4, 1fr)', '200px 1fr'], target: 'container' },
+          { name: 'gridTemplateRows', label: 'Rows', type: 'select', options: ['auto', '100px', '100px 200px', 'repeat(2, 150px)'], target: 'container' },
+          { name: 'gap', label: 'Gap', type: 'range', min: 0, max: 50, unit: 'px', target: 'container' },
+          { name: 'padding', label: 'Padding', type: 'range', min: 0, max: 50, unit: 'px', target: 'container' }
+        ],
+        steps: [
+          { instruction: 'Create 3 equal columns using "1fr 1fr 1fr"', property: 'gridTemplateColumns', value: '1fr 1fr 1fr' },
+          { instruction: 'Add gap between grid items', property: 'gap', value: '20' },
+          { instruction: 'Try 2 columns with "1fr 2fr" (second is wider)', property: 'gridTemplateColumns', value: '1fr 2fr' },
+          { instruction: 'Use repeat() function: "repeat(4, 1fr)"', property: 'gridTemplateColumns', value: 'repeat(4, 1fr)' }
+        ],
+        explanations: {
+          gridTemplateColumns: '"1fr" means one fraction of available space. "1fr 1fr" creates two equal columns.',
+          gridTemplateRows: 'Defines row heights. "auto" sizes to content, fixed values like "100px" set explicit heights.',
+          gap: 'Spacing between grid cells (replaces old grid-gap).',
+          padding: 'Inner spacing of the grid container.'
+        }
+      },
+      
+      'grid-layout': {
+        name: 'Grid Page Layout',
+        description: 'Build a classic page layout with header, sidebar, main, footer',
+        defaultHTML: `
+          <div class="demo-box" style="grid-area: header; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">Header</div>
+          <div class="demo-box" style="grid-area: sidebar; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">Sidebar</div>
+          <div class="demo-box" style="grid-area: main; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); min-height: 200px;">Main Content</div>
+          <div class="demo-box" style="grid-area: footer; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">Footer</div>
+        `,
+        defaultCSS: {
+          display: 'grid',
+          gridTemplateAreas: '"header header" "sidebar main" "footer footer"',
+          gridTemplateColumns: '200px 1fr',
+          gridTemplateRows: 'auto 1fr auto',
+          gap: '10',
+          padding: '20',
+          minHeight: '500'
+        },
+        controls: [
+          { name: 'gridTemplateColumns', label: 'Columns', type: 'select', options: ['200px 1fr', '250px 1fr', '1fr 3fr', '1fr'], target: 'container' },
+          { name: 'gap', label: 'Gap', type: 'range', min: 0, max: 30, unit: 'px', target: 'container' },
+          { name: 'padding', label: 'Padding', type: 'range', min: 0, max: 40, unit: 'px', target: 'container' },
+          { name: 'minHeight', label: 'Min Height', type: 'range', min: 300, max: 700, unit: 'px', target: 'container' }
+        ],
+        steps: [
+          { instruction: 'See the header and footer span both columns (grid-template-areas)', property: 'gridTemplateColumns', value: '200px 1fr' },
+          { instruction: 'Adjust sidebar width to 250px', property: 'gridTemplateColumns', value: '250px 1fr' },
+          { instruction: 'Add spacing between sections', property: 'gap', value: '15' },
+          { instruction: 'Try single column for mobile: "1fr"', property: 'gridTemplateColumns', value: '1fr' }
+        ],
+        explanations: {
+          gridTemplateAreas: 'Named grid areas make layout semantic. "header header" means header spans 2 columns.',
+          gridTemplateColumns: 'First value is sidebar width, "1fr" makes main content take remaining space.',
+          gap: 'Consistent spacing between all grid areas.',
+          minHeight: 'Ensures the layout has minimum height even with little content.'
+        }
+      },
+      
+      'responsive-columns': {
+        name: 'Responsive Columns',
+        description: 'Auto-responsive column grid',
+        defaultHTML: `
+          <div class="demo-box">Item 1</div>
+          <div class="demo-box">Item 2</div>
+          <div class="demo-box">Item 3</div>
+          <div class="demo-box">Item 4</div>
+          <div class="demo-box">Item 5</div>
+          <div class="demo-box">Item 6</div>
+        `,
+        defaultCSS: {
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '15',
+          padding: '20'
+        },
+        controls: [
+          { name: 'minColumnWidth', label: 'Min Column Width', type: 'range', min: 150, max: 400, unit: 'px', target: 'container' },
+          { name: 'gap', label: 'Gap', type: 'range', min: 0, max: 40, unit: 'px', target: 'container' },
+          { name: 'padding', label: 'Padding', type: 'range', min: 0, max: 50, unit: 'px', target: 'container' }
+        ],
+        steps: [
+          { instruction: 'Columns automatically adjust! Resize browser to see.', property: 'minColumnWidth', value: '200' },
+          { instruction: 'Increase minimum width to 300px (fewer columns)', property: 'minColumnWidth', value: '300' },
+          { instruction: 'Add generous gap for breathing room', property: 'gap', value: '25' },
+          { instruction: 'Try smaller min width (150px) for more columns', property: 'minColumnWidth', value: '150' }
+        ],
+        explanations: {
+          minColumnWidth: 'Minimum width before columns wrap. auto-fit creates responsive columns automatically!',
+          gap: 'Consistent spacing between columns and rows.',
+          padding: 'Container padding for better appearance.'
+        }
+      },
+      
+      'card-grid': {
+        name: 'Card Grid System',
+        description: 'Responsive card layout',
+        defaultHTML: `
+          <div class="demo-box" style="min-height: 150px;">Card 1</div>
+          <div class="demo-box" style="min-height: 150px;">Card 2</div>
+          <div class="demo-box" style="min-height: 150px;">Card 3</div>
+          <div class="demo-box" style="min-height: 150px;">Card 4</div>
+          <div class="demo-box" style="min-height: 150px;">Card 5</div>
+          <div class="demo-box" style="min-height: 150px;">Card 6</div>
+        `,
+        defaultCSS: {
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+          gap: '20',
+          padding: '20'
+        },
+        controls: [
+          { name: 'minCardWidth', label: 'Min Card Width', type: 'range', min: 200, max: 350, unit: 'px', target: 'container' },
+          { name: 'gap', label: 'Gap', type: 'range', min: 10, max: 50, unit: 'px', target: 'container' },
+          { name: 'padding', label: 'Padding', type: 'range', min: 10, max: 50, unit: 'px', target: 'container' }
+        ],
+        steps: [
+          { instruction: 'Cards wrap automatically based on screen width!', property: 'minCardWidth', value: '250' },
+          { instruction: 'Reduce card width for more columns', property: 'minCardWidth', value: '200' },
+          { instruction: 'Increase gap for card separation', property: 'gap', value: '30' },
+          { instruction: 'Larger cards (300px min)', property: 'minCardWidth', value: '300' }
+        ],
+        explanations: {
+          minCardWidth: 'Using auto-fill with minmax creates a responsive grid that adapts to screen size.',
+          gap: 'Spacing between cards for visual separation.',
+          padding: 'Padding around the entire card grid.'
+        }
+      },
+
+      // NEW COMPLETE PAGE LAYOUTS
+      'blog-layout': {
+        name: 'Blog Layout',
+        description: 'Classic blog with header, sidebar, and content area',
+        defaultHTML: `
+          <header style="grid-area: header; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 8px;">
+            <h1 style="margin: 0; font-size: 28px;">My Awesome Blog</h1>
+            <p style="margin: 5px 0 0; opacity: 0.9;">Thoughts, stories, and ideas</p>
+          </header>
+          
+          <nav style="grid-area: nav; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+              <a href="#" style="color: #667eea; text-decoration: none; font-weight: 600;">Home</a>
+              <a href="#" style="color: #4a5568; text-decoration: none;">About</a>
+              <a href="#" style="color: #4a5568; text-decoration: none;">Articles</a>
+              <a href="#" style="color: #4a5568; text-decoration: none;">Contact</a>
+            </div>
+          </nav>
+          
+          <main style="grid-area: main; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <article style="margin-bottom: 30px;">
+              <h2 style="color: #2d3748; margin-top: 0;">Getting Started with CSS Grid</h2>
+              <p style="color: #718096; font-size: 14px; margin: 10px 0;">Posted on Nov 9, 2025 by John Doe</p>
+              <p style="line-height: 1.8; color: #4a5568;">CSS Grid is a powerful layout system that allows you to create complex, responsive layouts with ease. In this article, we'll explore the fundamentals...</p>
+              <button style="background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 10px;">Read More →</button>
+            </article>
+            
+            <article style="margin-bottom: 30px;">
+              <h2 style="color: #2d3748; margin-top: 0;">Mastering Flexbox Layouts</h2>
+              <p style="color: #718096; font-size: 14px; margin: 10px 0;">Posted on Nov 8, 2025 by Jane Smith</p>
+              <p style="line-height: 1.8; color: #4a5568;">Flexbox revolutionized how we build layouts on the web. Learn the key concepts and practical applications in this comprehensive guide...</p>
+              <button style="background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 10px;">Read More →</button>
+            </article>
+          </main>
+          
+          <aside style="grid-area: sidebar; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <h3 style="color: #2d3748; margin-top: 0; font-size: 18px;">About Me</h3>
+            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 50%; margin: 15px 0;"></div>
+            <p style="color: #4a5568; line-height: 1.6; font-size: 14px;">Web developer passionate about creating beautiful, functional websites. Sharing knowledge through tutorials and articles.</p>
+            
+            <h3 style="color: #2d3748; margin-top: 25px; font-size: 18px;">Categories</h3>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 15px;">
+              <a href="#" style="color: #667eea; text-decoration: none; padding: 8px 12px; background: #f7fafc; border-radius: 6px; transition: all 0.2s;">CSS (12)</a>
+              <a href="#" style="color: #667eea; text-decoration: none; padding: 8px 12px; background: #f7fafc; border-radius: 6px;">JavaScript (8)</a>
+              <a href="#" style="color: #667eea; text-decoration: none; padding: 8px 12px; background: #f7fafc; border-radius: 6px;">Design (5)</a>
+            </div>
+          </aside>
+          
+          <footer style="grid-area: footer; background: #2d3748; color: white; padding: 20px; border-radius: 8px; text-align: center;">
+            <p style="margin: 0; font-size: 14px;">© 2025 My Blog. Built with CSS Grid.</p>
+          </footer>
+        `,
+        defaultCSS: {
+          display: 'grid',
+          gridTemplateAreas: '"header header" "nav nav" "main sidebar" "footer footer"',
+          gridTemplateColumns: '1fr 300px',
+          gridTemplateRows: 'auto auto 1fr auto',
+          gap: '20',
+          padding: '20',
+          minHeight: '600'
+        },
+        controls: [
+          { name: 'gridTemplateColumns', label: 'Columns (Main / Sidebar)', type: 'select', options: ['1fr 300px', '1fr 350px', '2fr 1fr', '3fr 1fr', '1fr'], target: 'container' },
+          { name: 'gap', label: 'Gap Between Sections', type: 'range', min: 10, max: 40, unit: 'px', target: 'container' },
+          { name: 'padding', label: 'Container Padding', type: 'range', min: 10, max: 50, unit: 'px', target: 'container' }
+        ],
+        steps: [
+          { instruction: 'The layout uses named grid areas for semantic structure', property: 'gridTemplateColumns', value: '1fr 300px' },
+          { instruction: 'Adjust sidebar width (try 350px)', property: 'gridTemplateColumns', value: '1fr 350px' },
+          { instruction: 'Add spacing between sections', property: 'gap', value: '25' },
+          { instruction: 'Make it single column for mobile (1fr)', property: 'gridTemplateColumns', value: '1fr' }
+        ],
+        explanations: {
+          gridTemplateAreas: 'Named areas make the layout semantic and easy to reorganize. Header and nav span full width.',
+          gridTemplateColumns: 'First column is flexible (1fr), sidebar has fixed width. Single column (1fr) stacks everything for mobile.',
+          gap: 'Consistent spacing between all layout sections.',
+          padding: 'Breathing room around the entire layout.'
+        }
+      },
+
+      'dashboard-layout': {
+        name: 'Dashboard Layout',
+        description: 'Admin dashboard with sidebar navigation and content grid',
+        defaultHTML: `
+          <aside style="grid-area: sidebar; background: linear-gradient(180deg, #2d3748 0%, #1a202c 100%); color: white; padding: 25px; border-radius: 8px;">
+            <h2 style="margin: 0 0 30px; font-size: 22px;">📊 Dashboard</h2>
+            <nav style="display: flex; flex-direction: column; gap: 12px;">
+              <a href="#" style="color: white; text-decoration: none; padding: 12px 15px; background: rgba(102, 126, 234, 0.3); border-radius: 6px; font-weight: 600;">🏠 Home</a>
+              <a href="#" style="color: rgba(255,255,255,0.7); text-decoration: none; padding: 12px 15px; border-radius: 6px;">📈 Analytics</a>
+              <a href="#" style="color: rgba(255,255,255,0.7); text-decoration: none; padding: 12px 15px; border-radius: 6px;">👥 Users</a>
+              <a href="#" style="color: rgba(255,255,255,0.7); text-decoration: none; padding: 12px 15px; border-radius: 6px;">⚙️ Settings</a>
+            </nav>
+          </aside>
+          
+          <header style="grid-area: header; background: white; padding: 20px 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center;">
+            <h1 style="margin: 0; font-size: 24px; color: #2d3748;">Welcome Back, User!</h1>
+            <div style="display: flex; gap: 15px; align-items: center;">
+              <span style="font-size: 24px;">🔔</span>
+              <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%;"></div>
+            </div>
+          </header>
+          
+          <main style="grid-area: main; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                <div>
+                  <p style="margin: 0; color: #718096; font-size: 14px; font-weight: 600;">TOTAL USERS</p>
+                  <h2 style="margin: 8px 0 0; font-size: 32px; color: #2d3748;">2,345</h2>
+                </div>
+                <span style="font-size: 32px;">👥</span>
+              </div>
+              <p style="margin: 0; color: #48bb78; font-size: 13px;">↑ 12% from last month</p>
+            </div>
+            
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                <div>
+                  <p style="margin: 0; color: #718096; font-size: 14px; font-weight: 600;">REVENUE</p>
+                  <h2 style="margin: 8px 0 0; font-size: 32px; color: #2d3748;">$45.2K</h2>
+                </div>
+                <span style="font-size: 32px;">💰</span>
+              </div>
+              <p style="margin: 0; color: #48bb78; font-size: 13px;">↑ 8% from last month</p>
+            </div>
+            
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                <div>
+                  <p style="margin: 0; color: #718096; font-size: 14px; font-weight: 600;">ORDERS</p>
+                  <h2 style="margin: 8px 0 0; font-size: 32px; color: #2d3748;">1,234</h2>
+                </div>
+                <span style="font-size: 32px;">📦</span>
+              </div>
+              <p style="margin: 0; color: #ef4444; font-size: 13px;">↓ 3% from last month</p>
+            </div>
+            
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                <div>
+                  <p style="margin: 0; color: #718096; font-size: 14px; font-weight: 600;">PERFORMANCE</p>
+                  <h2 style="margin: 8px 0 0; font-size: 32px; color: #2d3748;">95.8%</h2>
+                </div>
+                <span style="font-size: 32px;">📈</span>
+              </div>
+              <p style="margin: 0; color: #48bb78; font-size: 13px;">↑ 5% from last month</p>
+            </div>
+          </main>
+        `,
+        defaultCSS: {
+          display: 'grid',
+          gridTemplateAreas: '"sidebar header" "sidebar main"',
+          gridTemplateColumns: '250px 1fr',
+          gridTemplateRows: 'auto 1fr',
+          gap: '20',
+          padding: '20',
+          minHeight: '600'
+        },
+        controls: [
+          { name: 'gridTemplateColumns', label: 'Sidebar Width', type: 'select', options: ['250px 1fr', '200px 1fr', '300px 1fr', '1fr'], target: 'container' },
+          { name: 'gap', label: 'Gap', type: 'range', min: 10, max: 40, unit: 'px', target: 'container' },
+          { name: 'padding', label: 'Padding', type: 'range', min: 10, max: 50, unit: 'px', target: 'container' }
+        ],
+        steps: [
+          { instruction: 'Sidebar spans full height with fixed width', property: 'gridTemplateColumns', value: '250px 1fr' },
+          { instruction: 'Try narrower sidebar (200px)', property: 'gridTemplateColumns', value: '200px 1fr' },
+          { instruction: 'Add spacing between components', property: 'gap', value: '25' },
+          { instruction: 'Single column for mobile', property: 'gridTemplateColumns', value: '1fr' }
+        ],
+        explanations: {
+          gridTemplateAreas: 'Sidebar spans both rows, header and main are stacked in the right column.',
+          gridTemplateColumns: 'Fixed sidebar width with flexible content area. Use 1fr for mobile stacking.',
+          gap: 'Spacing between sidebar and content.',
+          padding: 'Outer spacing of the dashboard container.'
+        }
+      },
+
+      'landing-page': {
+        name: 'Landing Page',
+        description: 'Modern landing page with hero, features, and CTA',
+        defaultHTML: `
+          <header style="grid-area: header; background: white; padding: 20px 30px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <h1 style="margin: 0; font-size: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🚀 StartupApp</h1>
+            <nav style="display: flex; gap: 25px;">
+              <a href="#" style="color: #4a5568; text-decoration: none; font-weight: 600;">Features</a>
+              <a href="#" style="color: #4a5568; text-decoration: none; font-weight: 600;">Pricing</a>
+              <a href="#" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 600;">Sign Up</a>
+            </nav>
+          </header>
+          
+          <section style="grid-area: hero; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 80px 40px; border-radius: 8px; text-align: center;">
+            <h2 style="margin: 0; font-size: 48px; font-weight: 700;">Build Amazing Products</h2>
+            <p style="margin: 20px 0 30px; font-size: 20px; opacity: 0.9; max-width: 600px; margin-left: auto; margin-right: auto;">The fastest way to build and deploy modern web applications. Start creating today.</p>
+            <div style="display: flex; gap: 15px; justify-content: center;">
+              <button style="background: white; color: #667eea; border: none; padding: 15px 35px; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer;">Get Started →</button>
+              <button style="background: transparent; color: white; border: 2px solid white; padding: 15px 35px; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer;">Learn More</button>
+            </div>
+          </section>
+          
+          <section style="grid-area: features; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;">
+            <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;">
+              <div style="font-size: 48px; margin-bottom: 15px;">⚡</div>
+              <h3 style="margin: 0 0 12px; color: #2d3748; font-size: 20px;">Lightning Fast</h3>
+              <p style="margin: 0; color: #718096; line-height: 1.6;">Optimized for speed and performance. Your users will love the experience.</p>
+            </div>
+            
+            <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;">
+              <div style="font-size: 48px; margin-bottom: 15px;">🔒</div>
+              <h3 style="margin: 0 0 12px; color: #2d3748; font-size: 20px;">Secure by Default</h3>
+              <p style="margin: 0; color: #718096; line-height: 1.6;">Enterprise-grade security built in from day one. Your data is safe.</p>
+            </div>
+            
+            <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;">
+              <div style="font-size: 48px; margin-bottom: 15px;">🎨</div>
+              <h3 style="margin: 0 0 12px; color: #2d3748; font-size: 20px;">Beautiful Design</h3>
+              <p style="margin: 0; color: #718096; line-height: 1.6;">Pixel-perfect interfaces that users love. Design that converts.</p>
+            </div>
+          </section>
+          
+          <section style="grid-area: cta; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 60px 40px; border-radius: 8px; text-align: center;">
+            <h2 style="margin: 0 0 15px; font-size: 36px; font-weight: 700;">Ready to Get Started?</h2>
+            <p style="margin: 0 0 30px; font-size: 18px; opacity: 0.9;">Join thousands of developers building the future.</p>
+            <button style="background: white; color: #f5576c; border: none; padding: 15px 40px; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer;">Start Free Trial →</button>
+          </section>
+          
+          <footer style="grid-area: footer; background: #2d3748; color: white; padding: 30px; border-radius: 8px; text-align: center;">
+            <p style="margin: 0; font-size: 14px;">© 2025 StartupApp. All rights reserved.</p>
+          </footer>
+        `,
+        defaultCSS: {
+          display: 'grid',
+          gridTemplateAreas: '"header" "hero" "features" "cta" "footer"',
+          gridTemplateColumns: '1fr',
+          gridTemplateRows: 'auto auto auto auto auto',
+          gap: '20',
+          padding: '20',
+          maxWidth: '1200'
+        },
+        controls: [
+          { name: 'gap', label: 'Section Spacing', type: 'range', min: 10, max: 50, unit: 'px', target: 'container' },
+          { name: 'padding', label: 'Container Padding', type: 'range', min: 10, max: 50, unit: 'px', target: 'container' },
+          { name: 'maxWidth', label: 'Max Width', type: 'range', min: 900, max: 1400, unit: 'px', target: 'container' }
+        ],
+        steps: [
+          { instruction: 'Landing pages use single column layout', property: 'gridTemplateColumns', value: '1fr' },
+          { instruction: 'Add spacing between sections', property: 'gap', value: '30' },
+          { instruction: 'Control content width for readability', property: 'maxWidth', value: '1200' },
+          { instruction: 'Reduce gaps for compact mobile view', property: 'gap', value: '15' }
+        ],
+        explanations: {
+          gridTemplateAreas: 'Stacked sections from top to bottom. Perfect for storytelling and conversion.',
+          gridTemplateColumns: 'Single column keeps focus and works great on all devices.',
+          gap: 'Spacing between major sections of the landing page.',
+          maxWidth: 'Constrains content width for better readability on large screens.'
+        }
+      },
+
+      'portfolio-layout': {
+        name: 'Portfolio Layout',
+        description: 'Creative portfolio with project showcase',
+        defaultHTML: `
+          <header style="grid-area: header; background: white; padding: 25px 35px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h1 style="margin: 0; font-size: 28px; color: #2d3748;">Jane Designer</h1>
+                <p style="margin: 5px 0 0; color: #718096;">UI/UX Designer & Developer</p>
+              </div>
+              <nav style="display: flex; gap: 25px;">
+                <a href="#" style="color: #667eea; text-decoration: none; font-weight: 600;">Work</a>
+                <a href="#" style="color: #4a5568; text-decoration: none; font-weight: 600;">About</a>
+                <a href="#" style="color: #4a5568; text-decoration: none; font-weight: 600;">Contact</a>
+              </nav>
+            </div>
+          </header>
+          
+          <section style="grid-area: intro; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 50px 40px; border-radius: 8px; text-align: center;">
+            <div style="width: 120px; height: 120px; background: white; border-radius: 50%; margin: 0 auto 25px; box-shadow: 0 8px 20px rgba(0,0,0,0.2);"></div>
+            <h2 style="margin: 0 0 15px; font-size: 32px;">Creating Digital Experiences</h2>
+            <p style="margin: 0; font-size: 18px; opacity: 0.9; max-width: 600px; margin: 0 auto;">I design and build beautiful, functional websites and applications that users love.</p>
+          </section>
+          
+          <section style="grid-area: projects; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px;">
+            <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.3s;">
+              <div style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+              <div style="padding: 25px;">
+                <h3 style="margin: 0 0 10px; color: #2d3748; font-size: 20px;">E-commerce Platform</h3>
+                <p style="margin: 0 0 15px; color: #718096; line-height: 1.6;">Modern shopping experience with React and Node.js</p>
+                <span style="display: inline-block; background: #edf2f7; color: #667eea; padding: 5px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-right: 8px;">React</span>
+                <span style="display: inline-block; background: #edf2f7; color: #667eea; padding: 5px 12px; border-radius: 4px; font-size: 12px; font-weight: 600;">Node.js</span>
+              </div>
+            </div>
+            
+            <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+              <div style="height: 200px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+              <div style="padding: 25px;">
+                <h3 style="margin: 0 0 10px; color: #2d3748; font-size: 20px;">Mobile Banking App</h3>
+                <p style="margin: 0 0 15px; color: #718096; line-height: 1.6;">Secure banking interface with biometric authentication</p>
+                <span style="display: inline-block; background: #edf2f7; color: #f5576c; padding: 5px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-right: 8px;">Flutter</span>
+                <span style="display: inline-block; background: #edf2f7; color: #f5576c; padding: 5px 12px; border-radius: 4px; font-size: 12px; font-weight: 600;">Firebase</span>
+              </div>
+            </div>
+            
+            <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+              <div style="height: 200px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
+              <div style="padding: 25px;">
+                <h3 style="margin: 0 0 10px; color: #2d3748; font-size: 20px;">SaaS Dashboard</h3>
+                <p style="margin: 0 0 15px; color: #718096; line-height: 1.6;">Analytics platform for marketing teams</p>
+                <span style="display: inline-block; background: #edf2f7; color: #00f2fe; padding: 5px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-right: 8px;">Vue.js</span>
+                <span style="display: inline-block; background: #edf2f7; color: #00f2fe; padding: 5px 12px; border-radius: 4px; font-size: 12px; font-weight: 600;">D3.js</span>
+              </div>
+            </div>
+          </section>
+          
+          <footer style="grid-area: footer; background: #2d3748; color: white; padding: 30px; border-radius: 8px; text-align: center;">
+            <p style="margin: 0 0 10px; font-size: 16px; font-weight: 600;">Let's work together!</p>
+            <p style="margin: 0; font-size: 14px; opacity: 0.8;">jane@designer.com | +1 (555) 123-4567</p>
+          </footer>
+        `,
+        defaultCSS: {
+          display: 'grid',
+          gridTemplateAreas: '"header" "intro" "projects" "footer"',
+          gridTemplateColumns: '1fr',
+          gap: '25',
+          padding: '20',
+          maxWidth: '1200'
+        },
+        controls: [
+          { name: 'gap', label: 'Section Spacing', type: 'range', min: 15, max: 50, unit: 'px', target: 'container' },
+          { name: 'padding', label: 'Container Padding', type: 'range', min: 10, max: 50, unit: 'px', target: 'container' },
+          { name: 'maxWidth', label: 'Max Width', type: 'range', min: 900, max: 1400, unit: 'px', target: 'container' }
+        ],
+        steps: [
+          { instruction: 'Portfolio uses vertical stacking for storytelling', property: 'gap', value: '25' },
+          { instruction: 'Increase spacing for elegance', property: 'gap', value: '35' },
+          { instruction: 'Adjust max width for different screens', property: 'maxWidth', value: '1100' },
+          { instruction: 'Compact mobile view', property: 'gap', value: '15' }
+        ],
+        explanations: {
+          gridTemplateAreas: 'Simple vertical flow: header → intro → projects → footer.',
+          gridTemplateColumns: 'Single column layout keeps focus on portfolio pieces.',
+          gap: 'Generous spacing between sections for a premium feel.',
+          maxWidth: 'Content constraint for optimal viewing experience.'
+        }
+      },
+
+      'ecommerce-layout': {
+        name: 'E-commerce Layout',
+        description: 'Product listing page with filters and grid',
+        defaultHTML: `
+          <header style="grid-area: header; background: white; padding: 20px 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <h1 style="margin: 0; font-size: 26px; color: #2d3748;">🛍️ ShopHub</h1>
+              <div style="display: flex; gap: 20px; align-items: center;">
+                <input type="search" placeholder="Search products..." style="padding: 10px 15px; border: 1px solid #e2e8f0; border-radius: 6px; width: 250px; font-size: 14px;">
+                <span style="font-size: 24px; cursor: pointer;">🛒</span>
+                <span style="font-size: 24px; cursor: pointer;">👤</span>
+              </div>
+            </div>
+          </header>
+          
+          <aside style="grid-area: filters; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <h3 style="margin: 0 0 20px; color: #2d3748; font-size: 18px;">Filters</h3>
+            
+            <div style="margin-bottom: 25px;">
+              <h4 style="margin: 0 0 12px; color: #4a5568; font-size: 14px; font-weight: 600;">CATEGORY</h4>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label style="display: flex; align-items: center; gap: 8px; color: #718096; cursor: pointer;">
+                  <input type="checkbox" checked> Electronics
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; color: #718096; cursor: pointer;">
+                  <input type="checkbox"> Clothing
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; color: #718096; cursor: pointer;">
+                  <input type="checkbox"> Home & Garden
+                </label>
+              </div>
+            </div>
+            
+            <div style="margin-bottom: 25px;">
+              <h4 style="margin: 0 0 12px; color: #4a5568; font-size: 14px; font-weight: 600;">PRICE RANGE</h4>
+              <input type="range" min="0" max="1000" style="width: 100%; margin-bottom: 8px;">
+              <div style="display: flex; justify-content: space-between; color: #718096; font-size: 13px;">
+                <span>$0</span>
+                <span>$1000</span>
+              </div>
+            </div>
+            
+            <button style="width: 100%; background: #667eea; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer;">Apply Filters</button>
+          </aside>
+          
+          <main style="grid-area: products; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px;">
+            <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer;">
+              <div style="height: 220px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); position: relative;">
+                <span style="position: absolute; top: 12px; right: 12px; background: #ef4444; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 700;">-20%</span>
+              </div>
+              <div style="padding: 18px;">
+                <h4 style="margin: 0 0 8px; color: #2d3748; font-size: 16px;">Wireless Headphones</h4>
+                <p style="margin: 0 0 12px; color: #718096; font-size: 13px;">Premium sound quality</p>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <span style="color: #ef4444; font-weight: 700; font-size: 18px;">$79.99</span>
+                    <span style="color: #cbd5e0; text-decoration: line-through; font-size: 14px; margin-left: 8px;">$99.99</span>
+                  </div>
+                  <button style="background: #667eea; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Add</button>
+                </div>
+              </div>
+            </div>
+            
+            <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+              <div style="height: 220px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+              <div style="padding: 18px;">
+                <h4 style="margin: 0 0 8px; color: #2d3748; font-size: 16px;">Smart Watch</h4>
+                <p style="margin: 0 0 12px; color: #718096; font-size: 13px;">Track your fitness</p>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="color: #2d3748; font-weight: 700; font-size: 18px;">$199.99</span>
+                  <button style="background: #667eea; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Add</button>
+                </div>
+              </div>
+            </div>
+            
+            <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+              <div style="height: 220px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
+              <div style="padding: 18px;">
+                <h4 style="margin: 0 0 8px; color: #2d3748; font-size: 16px;">Laptop Stand</h4>
+                <p style="margin: 0 0 12px; color: #718096; font-size: 13px;">Ergonomic design</p>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="color: #2d3748; font-weight: 700; font-size: 18px;">$49.99</span>
+                  <button style="background: #667eea; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Add</button>
+                </div>
+              </div>
+            </div>
+            
+            <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+              <div style="height: 220px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);"></div>
+              <div style="padding: 18px;">
+                <h4 style="margin: 0 0 8px; color: #2d3748; font-size: 16px;">Mechanical Keyboard</h4>
+                <p style="margin: 0 0 12px; color: #718096; font-size: 13px;">RGB backlight</p>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="color: #2d3748; font-weight: 700; font-size: 18px;">$129.99</span>
+                  <button style="background: #667eea; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Add</button>
+                </div>
+              </div>
+            </div>
+          </main>
+        `,
+        defaultCSS: {
+          display: 'grid',
+          gridTemplateAreas: '"header header" "filters products"',
+          gridTemplateColumns: '280px 1fr',
+          gridTemplateRows: 'auto 1fr',
+          gap: '20',
+          padding: '20'
+        },
+        controls: [
+          { name: 'gridTemplateColumns', label: 'Filter Sidebar Width', type: 'select', options: ['280px 1fr', '250px 1fr', '320px 1fr', '1fr'], target: 'container' },
+          { name: 'gap', label: 'Gap', type: 'range', min: 10, max: 40, unit: 'px', target: 'container' },
+          { name: 'padding', label: 'Padding', type: 'range', min: 10, max: 50, unit: 'px', target: 'container' }
+        ],
+        steps: [
+          { instruction: 'E-commerce uses sidebar for filters + grid for products', property: 'gridTemplateColumns', value: '280px 1fr' },
+          { instruction: 'Adjust filter sidebar width', property: 'gridTemplateColumns', value: '250px 1fr' },
+          { instruction: 'Add spacing between components', property: 'gap', value: '25' },
+          { instruction: 'Stack for mobile (no sidebar)', property: 'gridTemplateColumns', value: '1fr' }
+        ],
+        explanations: {
+          gridTemplateAreas: 'Header spans full width, filters sidebar + products grid below.',
+          gridTemplateColumns: 'Fixed width sidebar for filters, flexible space for product grid.',
+          gap: 'Spacing between filter sidebar and product area.',
+          padding: 'Outer spacing of the shop layout.'
+        }
+      }
+    };
+
+    // State
+    let currentTemplate = 'flexbox-basics';
+    let currentStep = 0;
+    let currentCSS = {};
+    let currentHTML = '';
+    let previewMode = 'desktop';
+    let manualHTMLEdit = false;
+    let manualCSSEdit = false;
+
+    // Initialize
+    function init() {
+      loadTemplate(currentTemplate);
+      setupEventListeners();
+      setupTabSwitching();
+      setupNavigation();
+    }
+
+    function setupNavigation() {
+      // Hamburger menu
+      const hamburger = document.getElementById('hamburger');
+      const navMenu = document.getElementById('navbar-menu');
+      
+      hamburger.addEventListener('click', () => {
+        navMenu.classList.toggle('mobile-open');
+      });
+
+      // Navigation items
+      document.querySelectorAll('.navbar-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          document.querySelectorAll('.navbar-item').forEach(i => i.classList.remove('active'));
+          e.target.classList.add('active');
+          
+          const view = e.target.dataset.view;
+          handleNavigation(view);
+        });
+      });
+
+      // Export button
+      document.getElementById('export-btn').addEventListener('click', exportCode);
+      
+      // Save button
+      document.getElementById('save-btn').addEventListener('click', saveToLocalStorage);
+    }
+
+    function handleNavigation(view) {
+      switch(view) {
+        case 'templates':
+          // Already on templates view
+          break;
+        case 'editor':
+          // Switch to code editor tab
+          switchMainTab('html-editor');
+          break;
+        case 'examples':
+          alert('Examples gallery coming soon! This would show pre-built layouts.');
+          break;
+        case 'docs':
+          alert('Documentation coming soon! This would include CSS reference guides.');
+          break;
+      }
+    }
+
+    function setupTabSwitching() {
+      // Handle tab switching for all panels
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          const tabName = e.target.dataset.tab;
+          const parent = e.target.closest('.panel');
+          
+          // Remove active from all tabs in this panel
+          parent.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          e.target.classList.add('active');
+          
+          // Show corresponding content
+          parent.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+          });
+          parent.querySelector(`[data-content="${tabName}"]`).classList.add('active');
+          
+          // Update editors if switching to them
+          if (tabName === 'html-editor') {
+            updateHTMLEditor();
+          } else if (tabName === 'css-editor') {
+            updateCSSEditor();
+          }
+        });
+      });
+    }
+
+    function switchMainTab(tabName) {
+      const previewPanel = document.getElementById('preview-panel');
+      previewPanel.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      previewPanel.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+      
+      previewPanel.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      previewPanel.querySelector(`[data-content="${tabName}"]`).classList.add('active');
+      
+      if (tabName === 'html-editor') {
+        updateHTMLEditor();
+      } else if (tabName === 'css-editor') {
+        updateCSSEditor();
+      }
+    }
+
+    function setupEventListeners() {
+      // Template buttons
+      document.querySelectorAll('.template-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          currentTemplate = e.target.dataset.template;
+          currentStep = 0;
+          manualHTMLEdit = false;
+          manualCSSEdit = false;
+          loadTemplate(currentTemplate);
+        });
+      });
+
+      // Preview mode buttons
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          previewMode = e.target.dataset.mode;
+          updatePreviewMode();
+        });
+      });
+
+      // Reset button
+      document.getElementById('reset-btn').addEventListener('click', () => {
+        currentStep = 0;
+        manualHTMLEdit = false;
+        manualCSSEdit = false;
+        loadTemplate(currentTemplate);
+      });
+
+      // Next step button
+      document.getElementById('next-step-btn').addEventListener('click', () => {
+        const template = templates[currentTemplate];
+        if (currentStep < template.steps.length) {
+          const step = template.steps[currentStep];
+          currentCSS[step.property] = step.value;
+          currentStep++;
+          renderPreview();
+          renderTutorialSteps();
+          renderExplanation();
+          renderCode();
+          updateCSSEditor();
+          
+          // Update the control to reflect the change
+          const control = document.querySelector(`[data-control="${step.property}"]`);
+          if (control) {
+            control.value = step.value;
+            const valueDisplay = control.parentElement.querySelector('.value-display');
+            if (valueDisplay) {
+              valueDisplay.textContent = step.value + (getControlUnit(step.property) || '');
+            }
+          }
+        }
+      });
+
+      // HTML Editor
+      document.getElementById('apply-html').addEventListener('click', () => {
+        const htmlContent = document.getElementById('html-editor').value;
+        currentHTML = htmlContent;
+        manualHTMLEdit = true;
+        renderPreview();
+      });
+
+      document.getElementById('format-html').addEventListener('click', () => {
+        const editor = document.getElementById('html-editor');
+        editor.value = formatHTML(editor.value);
+      });
+
+      document.getElementById('copy-html').addEventListener('click', () => {
+        const editor = document.getElementById('html-editor');
+        navigator.clipboard.writeText(editor.value);
+        showNotification('HTML copied to clipboard!');
+      });
+
+      // CSS Editor
+      document.getElementById('apply-css').addEventListener('click', () => {
+        const cssContent = document.getElementById('css-editor').value;
+        manualCSSEdit = true;
+        applyManualCSS(cssContent);
+        renderPreview();
+      });
+
+      document.getElementById('format-css').addEventListener('click', () => {
+        const editor = document.getElementById('css-editor');
+        editor.value = formatCSS(editor.value);
+      });
+
+      document.getElementById('copy-css').addEventListener('click', () => {
+        const editor = document.getElementById('css-editor');
+        navigator.clipboard.writeText(editor.value);
+        showNotification('CSS copied to clipboard!');
+      });
+    }
+
+    function loadTemplate(templateKey) {
+      const template = templates[templateKey];
+      currentCSS = { ...template.defaultCSS };
+      currentHTML = template.defaultHTML;
+      
+      renderControls();
+      renderPreview();
+      renderTutorialSteps();
+      renderExplanation();
+      renderCode();
+      updateHTMLEditor();
+      updateCSSEditor();
+    }
+
+    function updateHTMLEditor() {
+      const editor = document.getElementById('html-editor');
+      if (!manualHTMLEdit) {
+        editor.value = formatHTML(currentHTML);
+      }
+    }
+
+    function updateCSSEditor() {
+      const editor = document.getElementById('css-editor');
+      if (!manualCSSEdit) {
+        editor.value = generateCSSCode();
+      }
+    }
+
+    function formatHTML(html) {
+      // Simple HTML formatting
+      return html.trim().replace(/></g, '>\n<');
+    }
+
+    function formatCSS(css) {
+      // Simple CSS formatting
+      return css.replace(/;/g, ';\n  ').replace(/{/g, '{\n  ').replace(/}/g, '\n}');
+    }
+
+    function applyManualCSS(cssText) {
+      // Parse CSS and update currentCSS object
+      const lines = cssText.split('\n');
+      lines.forEach(line => {
+        const match = line.match(/([\w-]+)\s*:\s*([^;]+)/);
+        if (match) {
+          let property = match[1].trim();
+          let value = match[2].trim();
+          
+          // Convert kebab-case to camelCase
+          property = property.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+          
+          // Handle special cases
+          if (property === 'gap' || property === 'padding') {
+            value = value.replace('px', '');
+          }
+          
+          currentCSS[property] = value;
+        }
+      });
+    }
+
+    function generateCSSCode() {
+      let css = '.container {\n';
+      
+      Object.keys(currentCSS).forEach(key => {
+        let cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+        let cssValue = currentCSS[key];
+        
+        // Handle special formatting
+        if (key === 'gap' || key === 'padding') {
+          cssValue += 'px';
+        } else if (key === 'minHeight') {
+          cssKey = 'min-height';
+          cssValue += 'px';
+        } else if (key === 'maxWidth') {
+          cssKey = 'max-width';
+          cssValue += 'px';
+        } else if (key === 'minColumnWidth') {
+          cssKey = 'grid-template-columns';
+          cssValue = `repeat(auto-fit, minmax(${cssValue}px, 1fr))`;
+        } else if (key === 'minCardWidth') {
+          cssKey = 'grid-template-columns';
+          cssValue = `repeat(auto-fill, minmax(${cssValue}px, 1fr))`;
+        } else if (key === 'gridTemplateAreas') {
+          cssValue = currentCSS[key].split(' ').map(a => `"${a}"`).join(' ');
+        }
+        
+        css += `  ${cssKey}: ${cssValue};\n`;
+      });
+      
+      css += '}';
+      return css;
+    }
+
+    function exportCode() {
+      const template = templates[currentTemplate];
+      const html = currentHTML;
+      const css = generateCSSCode();
+      
+      const fullCode = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${template.name}</title>
+  <style>
+    ${css}
+    
+    .demo-box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      min-height: 80px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    ${html}
+  </div>
+</body>
+</html>`;
+
+      // Download the file
+      const blob = new Blob([fullCode], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${currentTemplate}.html`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      showNotification('Code exported successfully!');
+    }
+
+    function saveToLocalStorage() {
+      const saveData = {
+        template: currentTemplate,
+        css: currentCSS,
+        html: currentHTML,
+        step: currentStep
+      };
+      
+      localStorage.setItem('layoutEditor', JSON.stringify(saveData));
+      showNotification('Progress saved!');
+    }
+
+    function showNotification(message) {
+      // Create a simple notification
+      const notification = document.createElement('div');
+      notification.textContent = message;
+      notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        z-index: 10000;
+        font-weight: 600;
+        animation: slideIn 0.3s ease;
+      `;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+      }, 2000);
+    }
+
+    function renderControls() {
+      const template = templates[currentTemplate];
+      const container = document.getElementById('controls-container');
+      container.innerHTML = '';
+
+      template.controls.forEach(control => {
+        const group = document.createElement('div');
+        group.className = 'control-group';
+
+        const label = document.createElement('label');
+        label.textContent = control.label;
+        group.appendChild(label);
+
+        if (control.type === 'select') {
+          const select = document.createElement('select');
+          select.dataset.control = control.name;
+          control.options.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt;
+            option.textContent = opt;
+            if (currentCSS[control.name] === opt) option.selected = true;
+            select.appendChild(option);
+          });
+          select.addEventListener('change', (e) => {
+            currentCSS[control.name] = e.target.value;
+            renderPreview();
+            renderExplanation();
+            renderCode();
+            updateCSSEditor();
+          });
+          group.appendChild(select);
+        } else if (control.type === 'range') {
+          const range = document.createElement('input');
+          range.type = 'range';
+          range.min = control.min;
+          range.max = control.max;
+          range.value = currentCSS[control.name];
+          range.dataset.control = control.name;
+
+          const valueDisplay = document.createElement('span');
+          valueDisplay.className = 'value-display';
+          valueDisplay.textContent = currentCSS[control.name] + (control.unit || '');
+
+          range.addEventListener('input', (e) => {
+            currentCSS[control.name] = e.target.value;
+            valueDisplay.textContent = e.target.value + (control.unit || '');
+            renderPreview();
+            renderExplanation();
+            renderCode();
+            updateCSSEditor();
+          });
+
+          label.appendChild(valueDisplay);
+          group.appendChild(range);
+        }
+
+        container.appendChild(group);
+      });
+    }
+
+    function renderPreview() {
+      const template = templates[currentTemplate];
+      const container = document.getElementById('preview-container');
+      
+      // Use manual HTML if user edited it
+      const htmlToUse = manualHTMLEdit ? currentHTML : template.defaultHTML;
+      
+      // Build CSS string
+      let cssString = '';
+      Object.keys(currentCSS).forEach(key => {
+        let cssKey = key;
+        let cssValue = currentCSS[key];
+        
+        // Convert camelCase to kebab-case
+        cssKey = cssKey.replace(/([A-Z])/g, '-$1').toLowerCase();
+        
+        // Handle special cases
+        if (key === 'gap' || key === 'padding') {
+          cssValue += 'px';
+        } else if (key === 'minHeight') {
+          cssKey = 'min-height';
+          cssValue += 'px';
+        } else if (key === 'maxWidth') {
+          cssKey = 'max-width';
+          cssValue += 'px';
+        } else if (key === 'minColumnWidth') {
+          cssKey = 'grid-template-columns';
+          cssValue = `repeat(auto-fit, minmax(${cssValue}px, 1fr))`;
+        } else if (key === 'minCardWidth') {
+          cssKey = 'grid-template-columns';
+          cssValue = `repeat(auto-fill, minmax(${cssValue}px, 1fr))`;
+        }
+        
+        cssString += `${cssKey}: ${cssValue}; `;
+      });
+
+      container.innerHTML = `<div style="${cssString}">${htmlToUse}</div>`;
+    }
+
+    function renderTutorialSteps() {
+      const template = templates[currentTemplate];
+      const container = document.getElementById('tutorial-steps');
+      container.innerHTML = '';
+
+      template.steps.forEach((step, index) => {
+        const stepDiv = document.createElement('div');
+        stepDiv.className = 'tutorial-step' + (index < currentStep ? ' completed' : '');
+        
+        const stepNumber = document.createElement('span');
+        stepNumber.className = 'step-number';
+        stepNumber.textContent = index + 1;
+        
+        stepDiv.appendChild(stepNumber);
+        stepDiv.appendChild(document.createTextNode(step.instruction));
+        
+        container.appendChild(stepDiv);
+      });
+    }
+
+    function renderExplanation() {
+      const template = templates[currentTemplate];
+      const container = document.getElementById('explanation-container');
+      
+      // Find which property was last modified
+      let explanationHTML = `<div class="explanation-content">
+        <h4>${template.name}</h4>
+        <p>${template.description}</p>
+      </div>`;
+
+      // Show explanations for active controls
+      const activeProperties = Object.keys(currentCSS);
+      activeProperties.forEach(prop => {
+        if (template.explanations[prop]) {
+          explanationHTML += `<div class="explanation-content">
+            <h4><code>${prop}</code></h4>
+            <p>${template.explanations[prop]}</p>
+            <p><strong>Current value:</strong> <code>${currentCSS[prop]}</code></p>
+          </div>`;
+        }
+      });
+
+      container.innerHTML = explanationHTML;
+    }
+
+    function renderCode() {
+      const template = templates[currentTemplate];
+      const container = document.getElementById('code-preview');
+      
+      let codeHTML = '<span class="keyword">.container</span> {<br>';
+      
+      Object.keys(currentCSS).forEach(key => {
+        let cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+        let cssValue = currentCSS[key];
+        
+        // Handle special formatting
+        if (key === 'gap' || key === 'padding') {
+          cssValue += 'px';
+        } else if (key === 'minHeight') {
+          cssKey = 'min-height';
+          cssValue += 'px';
+        } else if (key === 'minColumnWidth') {
+          cssKey = 'grid-template-columns';
+          cssValue = `repeat(auto-fit, minmax(${cssValue}px, 1fr))`;
+        } else if (key === 'minCardWidth') {
+          cssKey = 'grid-template-columns';
+          cssValue = `repeat(auto-fill, minmax(${cssValue}px, 1fr))`;
+        } else if (key === 'gridTemplateAreas') {
+          cssValue = `"${currentCSS[key].split(' ').join('" "')}"`;
+        }
+        
+        codeHTML += `  <span class="property">${cssKey}</span>: <span class="value">${cssValue}</span>;<br>`;
+      });
+      
+      codeHTML += '}';
+      container.innerHTML = codeHTML;
+    }
+
+    function updatePreviewMode() {
+      const container = document.getElementById('preview-container');
+      container.className = previewMode;
+    }
+
+    function getControlUnit(propertyName) {
+      const template = templates[currentTemplate];
+      const control = template.controls.find(c => c.name === propertyName);
+      return control ? control.unit : '';
+    }
+
+    // Start the app
+    init();
+  </script>
+</body>
+</html>
